@@ -3,6 +3,7 @@ const containerDiv = document.querySelector(".container");
 const gridInput = document.querySelector("#gridSizeInput");
 const gridButton = document.querySelector("#gridButton");
 const gridSizeDisplay = document.querySelector("#gridSize");
+const darkerBackgroundColor = 'hsl(0 0% 26.1%)';
 
 let ROWS = 16;
 let COLUMNS = 16;
@@ -33,8 +34,9 @@ function getSquareColor(rowIndex) {
 function createSquareDiv(rowIndex, colIndex) {
     const squareDiv = document.createElement("div");
     squareDiv.classList.add("square");
-    squareDiv.textContent = rowIndex * COLUMNS + colIndex;
+    //squareDiv.textContent = rowIndex * COLUMNS + colIndex;
     //squareDiv.style.backgroundColor = getSquareColor(rowIndex);
+    squareDiv.dataset.opacity = 0; // initial opacity
     return squareDiv;
 }
 
@@ -71,23 +73,38 @@ function getRandomHSL() {
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
+function getRandomRGB() {
+    const r = Math.floor(Math.random() * 256); // 0–255
+    const g = Math.floor(Math.random() * 256); // 0–255
+    const b = Math.floor(Math.random() * 256); // 0–255
+
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+function increaseOpacity(opacity){
+    if(opacity < 1){
+        return opacity + .10;
+    }
+    return 1;
+}
+
 // ----- Event Handlers -----
 gridButton.addEventListener("click", () => {
     const humanChoice = getHumanChoice();
 
-    if(Number.isInteger(humanChoice) && humanChoice >= 10 && humanChoice <= 100){
+    if(Number.isInteger(humanChoice) && humanChoice >= 1 && humanChoice <= 100){
         ROWS = humanChoice; 
         COLUMNS = humanChoice;
 
         // Clear old grid
-        containerDiv.replaceChildren();
-        rows = []; // removes stale references from memory
+        containerDiv.replaceChildren(); // Removes divs from DOM
+        rows = []; // Removes stale references from memory
         grid = [];
 
         createGrid();
     }
     else{
-        alert("Please enter a whole number between 10 and 100.")
+        alert("Please enter a whole number between 1 and 100.")
     }
 });
 
@@ -97,7 +114,16 @@ containerDiv.addEventListener('mouseover', (event) => {
 
     switch(target.className) {
         case 'square':
-            target.setAttribute("style", "background-color:black");
+            const randomColor = getRandomRGB();
+            const currentOpacity = parseFloat(target.dataset.opacity);
+            const newOpacity = increaseOpacity(currentOpacity);
+
+            // Apply new styles
+            target.style.backgroundColor = randomColor;
+            target.style.opacity = newOpacity;
+
+            // Update dataset for future increments
+            target.dataset.opacity = newOpacity;
             break;
     }
 });
@@ -107,15 +133,12 @@ containerDiv.addEventListener('mouseout', (event) => {
 
     switch(target.className) {
         case 'square':
-            const randomColor = getRandomHSL();
-            target.setAttribute("style", "background-color:" + randomColor);
             break;
     }
 });
 
 function main(){
     createGrid();
-    grid[0][5].textContent = '1';
 }
 
 main();

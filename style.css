@@ -21,14 +21,16 @@ body{
     background-color: gray;
     color: white;
     font-size: 3vw;
+    opacity: 0;
     
     display: flex;
     justify-content: center;
     align-items: center;
-
     overflow: hidden;
     flex:1;
-    transition: background-color 0.4s ease; /* For a smooth transition */
+
+    /* Transition both background color and opacity smoothly */
+    transition: background-color 0.4s ease, opacity 0.2s ease;
 }
 
 .row{
