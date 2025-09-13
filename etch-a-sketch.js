@@ -1,63 +1,77 @@
-// Create a 16x16 grid of square divs inside container div
-// Likely make a for loop to make 16x16 divs
-
-let grid = []; // //grid[i][j] represents a "square" div inside a "row" div at index i, j.
-let rows = []; // Holds references to "row" divs. 
+// ----- Constants & DOM Elements -----
+const containerDiv = document.querySelector(".container");
 const gridInput = document.querySelector("#gridSizeInput");
 const gridButton = document.querySelector("#gridButton");
 const gridSizeDisplay = document.querySelector("#gridSize");
-const containerDiv = document.querySelector(".container");
 
 let ROWS = 16;
 let COLUMNS = 16;
 
+let grid = []; // 2D array of squares
+let rows = []; // Array of row divs
+
+// ----- Helper Functions -----
+
+// Update the displayed grid size in #gridSize span
 function updateGridSizeDisplay(){
     gridSizeDisplay.textContent = ROWS + "x" + COLUMNS;
 }
 
+// Create a div with the class "row"
 function createRowDiv(){
     const rowDiv = document.createElement("div");
     rowDiv.classList.add("row");
     return rowDiv;
 }
 
+// For setting the square color upon creation - for debugging only
 function getSquareColor(rowIndex) {
     return rowIndex % 2 === 0 ? "red" : "purple";
 }
 
+// Create a div with the class "square"
 function createSquareDiv(rowIndex, colIndex) {
     const squareDiv = document.createElement("div");
     squareDiv.classList.add("square");
-    //squareDiv.textContent = rowIndex * COLUMNS + colIndex;
+    squareDiv.textContent = rowIndex * COLUMNS + colIndex;
     //squareDiv.style.backgroundColor = getSquareColor(rowIndex);
     return squareDiv;
 }
 
+// Build the full grid and attach to DOM
 function createGrid() {
     for (let i = 0; i < ROWS; i++) {
         const rowDiv = createRowDiv();
-        const row = []; // Array to hold "square" divs
-        rows[i] = rowDiv;
+        const rowArr = []; // Array to hold "square" divs
 
         for (let j = 0; j < COLUMNS; j++) {
             const squareDiv = createSquareDiv(i, j);
 
-            row[j] = squareDiv;
-            rowDiv.appendChild(squareDiv); // For displaying in DOM
+            rowArr[j] = squareDiv;
+            rowDiv.appendChild(squareDiv); // Attach to square to row div
         }
 
-        grid[i] = row;
-        containerDiv.appendChild(rowDiv); 
+        rows.push(rowDiv);
+        grid.push(rowArr);
+        containerDiv.appendChild(rowDiv);  // Attach row to DOM
     }
     
     updateGridSizeDisplay();
 }
 
-
 function getHumanChoice(){
     return Number(gridInput.value);
 }
 
+function getRandomHSL() {
+    const hue = Math.floor(Math.random() * 360);         // 0–359
+    const saturation = Math.floor(Math.random() * 101);  // 0–100%
+    const lightness = Math.floor(Math.random() * 101);   // 0–100%
+    
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+// ----- Event Handlers -----
 gridButton.addEventListener("click", () => {
     const humanChoice = getHumanChoice();
 
@@ -65,16 +79,15 @@ gridButton.addEventListener("click", () => {
         ROWS = humanChoice; 
         COLUMNS = humanChoice;
 
-        for(const row of rows){
-            row.remove(); //Removes "row" divs and "square" divs from DOM
-        }
+        // Clear old grid
+        containerDiv.replaceChildren();
         rows = []; // removes stale references from memory
         grid = [];
 
         createGrid();
     }
     else{
-        alert("Please enter a valid number between 10 to 100.")
+        alert("Please enter a whole number between 10 and 100.")
     }
 });
 
@@ -94,13 +107,15 @@ containerDiv.addEventListener('mouseout', (event) => {
 
     switch(target.className) {
         case 'square':
-            target.setAttribute("style", "background-color:hsl(0 0% 26.1%)");
+            const randomColor = getRandomHSL();
+            target.setAttribute("style", "background-color:" + randomColor);
             break;
     }
 });
 
 function main(){
     createGrid();
+    grid[0][5].textContent = '1';
 }
 
 main();
