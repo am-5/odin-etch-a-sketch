@@ -1,24 +1,16 @@
 body{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 5x;
 }
 .container{
     display: flex;
     flex-direction: column;
     box-sizing: border-box; 
-
-    /*Total width = width */
-    /* A box with box-sizing: border-box, 
-    width: 300px, 
-    padding: 20px,
-    and border: 5px 
-    will remain \(300px\) wide. 
-    The content area inside will be 300-(20*2)-(5*2) = 250px wide
-    */
-
-    border: 5px solid black; /* 1px width, solid style, black color */
-    max-width: 960px;
+    border: 5px solid black; 
+    max-width: 100%;
     width: 960px;
     aspect-ratio: 1/1;
 }
@@ -32,16 +24,11 @@ body{
     justify-content: center;
     align-items: center;
     flex:1;
-
-    transition: background-color 0.3s ease; /* For a smooth transition */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.4s ease; /* For a smooth transition */
 }
 
-/* Styles applied when the mouse hovers over the button
-.square:hover {
-  background-color: darkblue; /* Change background color on hover 
-  transform: scale(1.05); /* Slightly enlarge the button 
-  transition: all 0.3s ease; /* Smooth transition for all changes 
-} */
 .row{
     display: flex;
     flex: auto;

@@ -1,11 +1,19 @@
 // Create a 16x16 grid of square divs inside container div
 // Likely make a for loop to make 16x16 divs
 
-let grid = []; // Array for holding grid which will hold columns
+let grid = []; // //grid[i][j] represents a "square" div inside a "row" div at index i, j.
+let rows = []; // Holds references to "row" divs. 
+const gridInput = document.querySelector("#gridSizeInput");
+const gridButton = document.querySelector("#gridButton");
+const gridSizeDisplay = document.querySelector("#gridSize");
 const containerDiv = document.querySelector(".container");
-const ROWS = 16;
-const COLUMNS = 16;
-const AREA = ROWS * COLUMNS;
+
+let ROWS = 16;
+let COLUMNS = 16;
+
+function updateGridSizeDisplay(){
+    gridSizeDisplay.textContent = ROWS + "x" + COLUMNS;
+}
 
 function createRowDiv(){
     const rowDiv = document.createElement("div");
@@ -25,22 +33,50 @@ function createSquareDiv(rowIndex, colIndex) {
     return squareDiv;
 }
 
-//grid[i][j] represents a "square" div inside a "row" div at index i, j.
-for(let i = 0; i < ROWS; i++){
-    const rowDiv = createRowDiv();
-    const row =[]; // Array to hold a row of divs
+function createGrid() {
+    for (let i = 0; i < ROWS; i++) {
+        const rowDiv = createRowDiv();
+        const row = []; // Array to hold "square" divs
+        rows[i] = rowDiv;
 
-    for (let j = 0; j < COLUMNS; j++){
-        const squareDiv = createSquareDiv(i, j);
+        for (let j = 0; j < COLUMNS; j++) {
+            const squareDiv = createSquareDiv(i, j);
 
-        row.push(squareDiv);
-        rowDiv.appendChild(squareDiv); 
+            row[j] = squareDiv;
+            rowDiv.appendChild(squareDiv); // For displaying in DOM
+        }
+
+        grid[i] = row;
+        containerDiv.appendChild(rowDiv); 
     }
-
-    grid.push(row);
-    containerDiv.appendChild(rowDiv);
+    
+    updateGridSizeDisplay();
 }
 
+
+function getHumanChoice(){
+    return Number(gridInput.value);
+}
+
+gridButton.addEventListener("click", () => {
+    const humanChoice = getHumanChoice();
+
+    if(Number.isInteger(humanChoice) && humanChoice >= 10 && humanChoice <= 100){
+        ROWS = humanChoice; 
+        COLUMNS = humanChoice;
+
+        for(const row of rows){
+            row.remove(); //Removes "row" divs and "square" divs from DOM
+        }
+        rows = []; // removes stale references from memory
+        grid = [];
+
+        createGrid();
+    }
+    else{
+        alert("Please enter a valid number between 10 to 100.")
+    }
+});
 
 
 containerDiv.addEventListener('mouseover', (event) => {
@@ -62,3 +98,9 @@ containerDiv.addEventListener('mouseout', (event) => {
             break;
     }
 });
+
+function main(){
+    createGrid();
+}
+
+main();
