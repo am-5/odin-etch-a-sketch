@@ -36,7 +36,6 @@ function createSquareDiv(rowIndex, colIndex) {
     squareDiv.classList.add("square");
     //squareDiv.textContent = rowIndex * COLUMNS + colIndex;
     //squareDiv.style.backgroundColor = getSquareColor(rowIndex);
-    squareDiv.dataset.opacity = 0; // initial opacity
     return squareDiv;
 }
 
@@ -78,8 +77,14 @@ function getRandomRGB() {
     const g = Math.floor(Math.random() * 256); // 0–255
     const b = Math.floor(Math.random() * 256); // 0–255
 
-    return `rgb(${r}, ${g}, ${b})`;
+    return {r, g, b};
 }
+
+// Increase alpha channel (0 to 1)
+function increaseAlpha(alpha) {
+    return Math.min(alpha + 0.1, 1);
+}
+
 
 function increaseOpacity(opacity){
     if(opacity < 1){
@@ -114,16 +119,18 @@ containerDiv.addEventListener('mouseover', (event) => {
 
     switch(target.className) {
         case 'square':
-            const randomColor = getRandomRGB();
-            const currentOpacity = parseFloat(target.dataset.opacity);
-            const newOpacity = increaseOpacity(currentOpacity);
+            // Read stored alpha from dataset, or start at 0
+            const currentAlpha = parseFloat(target.dataset.alpha) || 0;
+            const newAlpha = increaseAlpha(currentAlpha);
 
-            // Apply new styles
-            target.style.backgroundColor = randomColor;
-            target.style.opacity = newOpacity;
+            // Get random RGB
+            const { r, g, b } = getRandomRGB();
+
+            // Set randomized background color with increased alpha opacity
+            target.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
 
             // Update dataset for future increments
-            target.dataset.opacity = newOpacity;
+            target.dataset.alpha = newAlpha;
             break;
     }
 });
